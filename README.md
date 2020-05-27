@@ -14,3 +14,4 @@ Send data to a server - in the background
 By using ajax technique we can add, display, edit and delete data without reloading whole page.
 
 <h3>About ajax read the ajax.txt in my repo.</h3>
+<h3> curd.php is main page or index page</h3>
