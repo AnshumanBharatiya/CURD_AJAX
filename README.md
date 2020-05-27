@@ -12,3 +12,5 @@ Send data to a server - in the background
 </p>
 
 By using ajax technique we can add, display, edit and delete data without reloading whole page.
+
+<h3>About ajax read the ajax.txt in my repo.</h3>
