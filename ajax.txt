@@ -1,0 +1,610 @@
+//load.php<->index1.php
+//class.php<->index2.php
+//backend.php<->curd.php
+//response1.php<->response.php
+
+AJAX Introduction:-
+--------------------------
+-> AJAX stads for Asynchronous Java-script And XML (Extensible Markup Language).
+-> It is a technique for creating fast and dynamic web page.
+-> It allow web pages to be updated asynchronously by exchanging data behind the scenes.
+-> This means that without reloadig or refreshing whole page data can be updated.
+-> Normal/Static/Classic web pages (which do not use AJAX) are reloading whole page if the content should		change.
+
+
+AJAX includes:-
+-------------------
+-> css (Cascading Style Sheets) and XHTML (Extensible Hyper Text Markup Language) are used to create
+	structure of the web page and it's virtual style.
+-> For data manupulation XML (Extensible) is used.
+-> For data retrieval XHTTPrequest used.
+
+Example:-
+--------------
+Google map,Gmail,Youtube,Facebook
+
+There are 2 ways that AJAX can access the server 
+1. Synchronous (--------->
+				<---------
+				--------->).
+
+2. asynchronously (<-------------------->)
+
+
+
+example 1:-	using load() method AJAX Example
+---------------
+
+index.php
+_____________________
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<!--<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1">-->
+	<title>Ajax Demo </title>
+	<!--<link rel="stylesheet" type="text/css" href="css/bootstrap.css">-->
+	<link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
+	<script src="jquery.js"></script>
+</head>
+<body>
+
+
+	<div class="container">
+		<div id="loaddata">
+			<h2>this is going to be change...........</h2>
+		</div>
+		<button class="btn btn-info" id="btn1">click</button>
+	</div>
+
+	<script>
+		$(document).ready(function(){
+			$('#btn1').click(function(){
+				$('#loaddata').load('load.php',function(){
+					confirm("are you want to change");
+				});
+			});
+		});
+	</script>
+
+	<!-- <script src="js/jquery.min.js"></script> -->
+	<!-- <script src="js/popper.min.js.map"></script> -->
+	<!-- <script src="js/bootstrap.min.js"></script> -->
+</body>
+</html>
+
+load.php
+___________________
+
+<h2>
+	this line is changed bcz ajax is used
+</h2>
+
+------------------------------------------------------------------------------------------
+
+using java script AJAX example
+----------------------------------
+-> The XMLHttpRequest object is used to exchange data with a server.
+-> To send a request to a server , we use the open|(),& send() methods of the XML HTTPRequst object.
+
+open(method,url,async)
+method= POST,GET
+url= from which data will fetch
+async=true or fale //true=Asynchronous or false=Synchronous
+
+send() send request when using GET method
+
+onreadystatechange
+
+example 2:-
+--------------------------
+index.php
+___________________________________________
+
+	<div class="container">
+		<div id="loaddata">
+			<h3> This is going to be changed................</h3>
+		</div>
+		<input type="submit" class="btn btn-info" value="Click" onclick="myfun()">
+	</div>
+
+	<script type="text/javascript">
+		function myfun()
+		{
+			var req = new XMLHttpRequest(); // create a object of XMLHttpRequest
+			req.open('GET','load.php',true); // method of of XMLHttpRequest Object
+			req.send();						 // another method of of XMLHttpRequest Object
+
+			req.onreadystatechange = function(){
+				if (req.readyState == 4 && req.status == 200) {
+					document.getElementById('loaddata').innerHTML=req.responseText;
+				}
+			}
+		}
+	</script>
+
+load.php
+_______________________________________
+
+<h3>Please <strong>subscribe & like </strong>my channel #abSite.</h3>
+
+
+---------------------------------------------------------------------------------------------
+
+Data transmission using AJAX
+------------------------------------
+the data can transmitted by using 3 function
+$.ajax()
+$.post()
+$.get()
+
+AJAX
+---------------
+example 3:-
+------------------------------
+
+index.php
+__________________
+
+<?php
+	$con=mysqli_connect('localhost','root','','ajax');
+
+?>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>Ajax Example</title>
+	<link rel="stylesheet" type="text/css" href="css/bootstrap.css">
+	<link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
+	<script src="jquery.js"></script>
+</head>
+<body>
+	<div class="container col-lg-6">
+		<form class="bg-secondary p-4 m-4">
+		<h2 class="text-center text-info p-3 bg-dark text-capitalize">get data from database</h2>
+			User Name:<input type="text" name="name" class="form-control" placeholder="Enter Name"><br>
+			Password:<input type="password" name="password" class="form-control" placeholder="Enter Password"><br>
+			Degree:<select class="form-control" onchange="myfun(this.value)">
+				<option>Select Any One</option>
+				<?php
+					$sql="select * from degree";
+					$result=mysqli_query($con,$sql);
+					while($row=mysqli_fetch_array($result)):
+				?>
+				<option value="<?php echo $row['mid'];?>"><?php echo $row['degrees'];?></option>
+				<?php
+					endwhile;
+				?>
+			</select><br>
+			Class:<select class="form-control" id="dataget">
+				<option>Choose Any One</option>
+			</select><br>
+			<input type="submit" class="btn btn-primary btn-block mb-5" name="submit" value="submit" id="btn1">
+		</form>
+	</div>
+	<script>
+		function myfun(datavalue)
+		{ 
+			$.ajax({
+				url:'class.php',
+				type:'POST',
+				data:{datapost:datavalue},
+				success:function(result){
+					$('#dataget').html(result);
+				}
+			});
+		}
+	</script>
+</body>
+</html>
+
+class.php
+__________________________________
+
+<?php
+	$datapost=$_POST['datapost'];
+	$con=mysqli_connect('localhost','root','','ajax');
+	$sql1="select * from classes where mid=$datapost";
+	$result=mysqli_query($con,$sql1);
+	while($row=mysqli_fetch_array($result)):
+?>
+<option><?php echo $row['classes'];?></option>
+<?php
+	endwhile;
+?>
+
+
+GET
+---------
+$.get() method request data from the server with an HTTP GET request.
+syntax:-
+	$.get(url,callback);
+	 url is required parameter that specifies the url you wish to request.
+	 callback is optional parameter that is name of a function to be axecuted if the request succeeds.
+
+example 4:-
+----------------
+index.php
+___________________
+
+<div class="container mt-5">
+	<h2 id="changehere">This line is going to be change.......</h2>
+	<button class="btn btn-info" id="btn1">click here</button>
+</div>
+	
+	<script type="text/javascript">
+		$(document).ready(function(){
+			$('#btn1').click(function(){
+				$.get('load.php',function(data,status){
+					$('#changehere').html(data);
+					alert(status);
+				});
+			});
+		});
+	</script> 
+
+load.php
+___________________________
+
+<h1>Please <strong>subscribe & like </strong>my channel #abSite.</h1> 
+
+POST-
+------------
+$.post() method request data from the server an HTTP POST request.
+syntax:-
+	$.post(url,data,callback);
+	url is required parameter that specifies the url you wish to request.
+	data is optional parameter that speifies some data will send along with request
+	callback is optional parameter that is name of a function to be axecuted if the request succeeds.
+
+example 5:-
+----------------------------
+index.php
+_________________________
+
+<div class="container mt-5">
+	<h2 id="changehere">This line is going to be change.......</h2>
+	<button class="btn btn-info" id="btn1">click here</button>
+</div>
+	
+	<script type="text/javascript">
+		$(document).ready(function(){
+			$('#btn1').click(function(){
+				$.post('load.php',{
+					name:"anshuman bharatiya",
+					sub:"youtube course"
+				},function(data,status){
+					$('#changehere').html(data);
+					alert(status);
+				});
+			});
+		});
+	</script>
+
+load.php
+__________________
+<?php
+	$name=$_POST["name"];
+	$sub=$_POST["sub"];
+	echo "My name is ".$name." i want to join".$sub;
+?>
+
+
+example 7:
+CURD operation using php,mysql,bootstrap & ajax .
+-------------------------------------------------------------
+curd.php
+_________________________________
+<!-- CURD OPERATION USING AJAX  
+	urd.php ,, backend.php, -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>CURD USING AJAX</title>
+	<link rel="stylesheet" type="text/css" href="css/bootstrap.css">
+	<link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
+	<script src="jquery.js"></script>
+	<script src="js/jquery.min.js"></script>
+</head>
+<body>
+	<div class="container p-5">
+
+		<h1 class="text-info text-center text-uppercase">ajax curd opeartion</h1><hr>
+		
+		<div class="d-flex justify-content-end">
+			<button type="button" class="btn btn-sm btn-warning" data-toggle="modal" data-target="#myModal">Insert Record
+			</button>
+		</div>
+		<div>
+			<h2 class="text-info">ALL RECORDS</h2>
+			<div id="record_contant">
+
+			</div>	
+		</div>
+		<!-- insert modal -->
+		<div class="modal fade" id="myModal">
+			<div class="modal-dialog  modal-dialog-centered"><!--  modal-dialog-scrollable"> -->
+			    <div class="modal-content">
+				    <div class="modal-header">
+				        <h4 class="modal-title text-uppercase text-info">Insert Record</h4>
+				        <button type="button" class="close" data-dismiss="modal">&times;</button>
+				    </div>
+				    <div class="modal-body">
+				      	<div class="form-group">
+				      		<label for="firstname">First Name:</label>
+				      		<input type="text" name="firstname" id="firstname" autocomplete="off" class="form-control" placeholder="Enter First Name">
+				      	</div>
+				      	<div class="form-group">
+				      		<label for="lastname">Last Name:</label>
+				      		<input type="text" name="lastname" id="lastname"  autocomplete="off" class="form-control" placeholder="Enter Last Name">
+				      	</div>
+				      	<div class="form-group">
+				      		<label for="email">Email Id:</label>
+				      		<input type="email" name="email" id="email" autocomplete="off" class="form-control" placeholder="Enter Email Id">
+				      	</div>
+				      	<div class="form-group">
+				      		<label for="mobile">Mobile Number:</label>
+				      		<input type="text" name="mobile" id="mobile" autocomplete="off" class="form-control" placeholder="Enter Mobile Number">
+				      	</div>
+				        
+				    </div>
+				    <div class="modal-footer">
+				      	<button type="button" class="btn btn-success btn-sm" data-dismiss="modal" onclick="addRecord()">Save
+				      	</button>
+				        <button type="button" class="btn btn-danger btn-sm" data-dismiss="modal">Close</button>
+				    </div>
+			    </div>
+			</div>
+		</div>
+		<!-- update modal  -->
+		<div class="modal fade" id="update_user_modal">
+				<div class="modal-dialog  modal-dialog-centered"><!--  modal-dialog-scrollable"> -->
+				    <div class="modal-content">
+					    <div class="modal-header">
+					        <h4 class="modal-title text-uppercase text-info">Update Record</h4>
+					        <button type="button" class="close" data-dismiss="modal">&times;</button>
+					    </div>
+					    <div class="modal-body">
+					      	<div class="form-group">
+					      		<label for="update_firstname">First Name:</label>
+					      		<input type="text" name="" id="update_firstname" class="form-control">
+					      	</div>
+					      	<div class="form-group">
+					      		<label for="update_lastname">Last Name:</label>
+					      		<input type="text" name="" id="update_lastname"  class="form-control">
+					      	</div>
+					      	<div class="form-group">
+					      		<label for="update_email">Email Id:</label>
+					      		<input type="email" name="" id="update_email" class="form-control">
+					      	</div>
+					      	<div class="form-group">
+					      		<label for="update_mobile">Mobile Number:</label>
+					      		<input type="text" name="" id="update_mobile" class="form-control">
+					      	</div>
+					        
+					    </div>
+					    <div class="modal-footer">
+					      	<button type="button" class="btn btn-success btn-sm" data-dismiss="modal" onclick="updateDetails()">Update
+					      	</button>
+					        <button type="button" class="btn btn-danger btn-sm" data-dismiss="modal">Close</button>
+					        <input type="hidden" name="" id="hidden_user_id">
+					    </div>
+				    </div>
+				</div>
+			</div>
+	
+	<script>
+			// display record
+		$(document).ready(function(){
+			readRecords();
+
+		});
+	
+		function readRecords()
+		{
+			var  readrecord = "readrecord";
+			$.ajax({
+				url:'backend.php',
+				type:'post',
+				data:{readrecord:readrecord},
+				success:function(data,status){
+					$('#record_contant').html(data);
+					
+				}
+			});
+		}
+
+// insert record
+		function addRecord()
+		{
+			var firstnames = $('#firstname').val();
+			var lastnames = $('#lastname').val();
+			var emails = $('#email').val();
+			var mobiles = $('#mobile').val();
+			$.ajax({
+				url:'backend.php',
+				type:'post',
+				data:{
+					firstname:firstnames,
+					lastname:lastnames,
+					email:emails,
+					mobile:mobiles
+				},success:function(data,status){
+					readRecords();
+				}
+			});
+		}
+		// delete record
+
+		function deleteRecord(deleteid)
+		{
+			var conf = confirm("Are you want to delete record?");
+			if(conf == true)
+			{
+				$.ajax({
+					url:'backend.php',
+					type:'post',
+					data:{deleteid:deleteid},
+					success:function(data,status){
+						readRecords();
+					}
+				})
+			}
+		}
+		//update record
+		function updateRecord(id)
+		{
+			$('#hidden_user_id').val(id);
+			$.post('backend.php',{id:id},function(data,status)
+			{
+				var obj = JSON.parse(data);
+				$('#update_firstname').val(obj.firstname);
+				$('#update_lastname').val(obj.lastname);
+				$('#update_email').val(obj.email);
+				$('#update_mobile').val(obj.mobile);
+
+			});
+		$('#update_user_modal').modal("show");
+
+		}
+		function updateDetails()
+		{
+			var fname=$('#update_firstname').val();
+			var lname=$('#update_lastname').val();
+			var e_mail=$('#update_email').val();
+			var mob=$('#update_mobile').val();
+			var hidden_id=$('#hidden_user_id').val();
+			$.ajax({
+				url:'backend.php',
+				type:'post',
+				data:{
+					hidden_id:hidden_id,
+					fname:fname,
+					lname:lname,
+					e_mail:e_mail,
+					mob:mob
+				},success:function(data,status){
+					$('#update_user_modal').modal("hide");
+					readRecords();
+				}
+			});
+		}
+	</script>
+
+	
+	<script src="js/popper.min.js.map"></script>
+	<script src="js/bootstrap.min.js"></script>
+</body>
+</html>
+backend.php
+____________________________________
+<?php
+$conn = mysqli_connect('localhost','root','','ajax');
+extract($_POST);
+//display record
+if(isset($_POST['readrecord']))
+{
+	$data='<table class="table table-striped table-hover">
+			<tr>
+			 	<th>sl no.</th>
+			 	<th>Firstname</th>
+			 	<th>Lastname</th>
+			 	<th>Email Address</th>
+			 	<th>Mobile Number</th>
+			 	<th>Edit Data</th>
+			 	<th>Delete Data</th>
+			</tr>';
+			$sql1="select * from curd ";
+
+			$result=mysqli_query($conn,$sql1);
+
+			if(mysqli_num_rows($result)>0)
+			{
+				$number=1;
+				while($row = mysqli_fetch_array($result))
+				{
+					$data .='<tr>
+				 				<td>'.$number.'</td>
+				 				<td>'.$row['firstname'].'</td>
+				 				<td>'.$row['lastname'].'</td>
+				 				<td>'.$row['email'].'</td>
+				 				<td>'.$row['mobile'].'</td>
+				 				<td>
+				 					<button class="btn btn-sm btn-warning" onclick="updateRecord('.$row['id'].')">Edit</button>
+				 				</td>
+				 				<td>
+				 					<button class="btn btn-sm btn-danger" onclick="deleteRecord('.$row['id'].')">Delete</button>
+				 				</td>
+							</tr>';		
+					$number++;
+				}
+			}
+	$data .= '</table>';
+		echo $data;
+}
+//insert record
+if(isset($_POST['firstname']) && isset($_POST['lastname']) && isset($_POST['email']) && isset($_POST['mobile']) )
+{
+	$sql="INSERT INTO `curd`(`firstname`, `lastname`, `email`, `mobile`) VALUES('$firstname','$lastname','$email','$mobile')";
+	mysqli_query($conn,$sql);
+}
+
+//delete record
+
+if(isset($_POST['deleteid']))
+{
+	$userid=$_POST['deleteid'];
+	$deletequery="delete from curd where id='$userid'";
+	mysqli_query($conn,$deletequery);
+}
+
+// get user id for update
+if(isset($_POST['id']) && isset($_POST['id']) != "")
+{
+	$user_id = $_POST['id'];
+	$query = "select * from curd where id='$user_id'";
+	if(!$result = mysqli_query($conn,$query))
+	{
+		exit(mysqli_error());
+	}
+	$response=array();
+	if(mysqli_num_rows($result)>0)
+	{
+		while($row=mysqli_fetch_assoc($result)) 
+		{
+			$response=$row;
+		}
+	}
+	else
+	{
+		$response['status']=200;
+		$response['message']="Record not found ! ";
+	}
+	echo json_encode($response);
+}
+else
+{
+	$response['status']=200;
+	$response['message']="Invalid Request !";	
+}
+//update record
+if(isset($_POST['hidden_id']))
+{
+	$hidden_id=$_POST['hidden_id'];
+	$fname=$_POST['fname'];
+	$lname=$_POST['lname'];
+	$e_mail=$_POST['e_mail'];
+	$mob=$_POST['mob'];
+	$updatequery="update curd set firstname='$fname',lastname='$lname',email='$e_mail',mobile='$mob' where id='$hidden_id' ";
+	mysqli_query($conn,$updatequery);
+}
+?>
